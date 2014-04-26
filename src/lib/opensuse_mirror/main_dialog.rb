@@ -17,6 +17,7 @@
 #  you may find current contact information at www.suse.com
 
 require "yast"
+require "opensuse_mirror/updates"
 
 module OpensuseMirror
   class MainDialog
@@ -62,21 +63,88 @@ module OpensuseMirror
           return :cancel
         when :ok
           return :ok
+        when :enable
+          switch_state_to true
+          redraw_channels
+        when :disable
+          switch_state_to false
+          redraw_channels
+        when :all
+          toggle_selection
         else
           raise "Unknown action #{input}"
         end
       end
     end
 
+    def selected_updates
+      Yast::UI.QueryWidget(Id(:updates_table), :SelectedItems)
+    end
+
+    def switch_state_to target_state
+      selected_updates.each do |update|
+        available_updates.find(update).mirrored = target_state
+      end
+    end
+
+    def toggle_selection
+      all = selected_updates.empty?
+      if all
+        selection = available_updates.map { |u| Id(u.directory) }
+      else
+        selection = []
+      end
+      Yast::UI.ChangeWidget(Id(:updates_table), :SelectedItems, selection)
+    end
+
+    def redraw_channels
+      Yast::UI.ChangeWidget(:updates_table, :Items, updates_items)
+    end
+
     def dialog_content
       VBox(
-        ending_buttons
+        HBox(
+          updates_table,
+          action_buttons
+        ),
+        VStretch(),
+        Right(ending_buttons)
       )
+    end
+
+    def updates_table
+      Table(
+        Id(:updates_table),
+        Opt(:multiSelection),
+        Header(_("Directory"), _("Mirrored")),
+        updates_items
+      )
+    end
+
+    def updates_items
+      available_updates.map do |update|
+        Item(
+          Id(update.directory),
+          update.directory,
+          update.mirrored ? _("yes") : _("no")
+        )
+      end
+    end
+
+    def available_updates
+      @available_updates ||= Updates.available
     end
 
     def ending_buttons
       PushButton(Id(:ok), _("&Exit"))
     end
 
+    def action_buttons
+      VBox(
+        PushButton(Id(:enable), _("&Mirror")),
+        PushButton(Id(:disable), _("&Do not Mirror")),
+        PushButton(Id(:all), _("Select/Deselect &All")),
+      )
+    end
   end
 end
