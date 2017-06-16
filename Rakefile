@@ -17,3 +17,5 @@
 #  you may find current contact information at www.suse.com
 
 require "yast/rake"
+
+Yast::Tasks.submit_to :sle12sp3
