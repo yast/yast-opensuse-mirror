@@ -66,4 +66,4 @@ rake install DESTDIR="%{buildroot}"
 %{yast_dir}/clients/*.rb
 %{yast_dir}/lib/opensuse_mirror
 
-%doc COPYING
+%license COPYING
