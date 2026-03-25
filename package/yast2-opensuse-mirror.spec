@@ -24,7 +24,7 @@
 ######################################################################
 
 Name:           yast2-opensuse-mirror
-Version:        3.1.0
+Version:        3.1.1
 Release:        0
 BuildArch:      noarch
 
@@ -35,7 +35,6 @@ Requires:       yast2 >= 3.0.5
 Requires:       yast2-ruby-bindings >= 1.2.0
 Requires:       rsync
 
-BuildRequires:  update-desktop-files
 BuildRequires:  yast2-ruby-bindings >= 1.2.0
 BuildRequires:  yast2-devtools >= 1.2.0
 BuildRequires:  yast2 >= 3.0.5
